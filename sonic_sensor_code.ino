@@ -1,14 +1,20 @@
 //pin setup for HC super sonic thingy sensor
-const int tpSensor1 = 8, epSensor1 = 9; //first sensor
-const int tpSensor2 = 10, epSensor2 = 11; //second sensor
-const int tpSensor3 = 12, epSensor3 = 13; //third sensor
+
+struct HCsensor {
+  const int trig;
+  const int echo;
+};
+
+HCsensor roombaSensor = {8, 9};
+HCsensor leftWall = {10, 11};
+HCsensor rightWall = {12, 13};
 
 //motor pins
 const int motorpin1 = 4;
 const int motorpin2 = 5;
 const int speedmotor = 3;
 
-float distance1, distance2, distance3;
+float rd, lwd, rwd;
 
 float getDistance(int echo, int trig){
   digitalWrite(trig, LOW);
@@ -33,12 +39,12 @@ void stopMotor(){
 
 void setup() {
   //hc sensor
-  pinMode(tpSensor1, OUTPUT);
-  pinMode(epSensor1, INPUT);
-  pinMode(tpSensor2, OUTPUT);
-  pinMode(epSensor2, INPUT);
-  pinMode(tpSensor3, OUTPUT);
-  pinMode(epSensor3, INPUT);
+  pinMode(roombaSensor.trig, OUTPUT);
+  pinMode(roombaSensor.echo, INPUT);
+  pinMode(leftWall.trig, OUTPUT);
+  pinMode(leftWall.echo, INPUT);
+  pinMode(rightWall.trig, OUTPUT);
+  pinMode(rightWall.echo, INPUT);
 
   //L298N
   pinMode(motorpin1, OUTPUT);
@@ -51,18 +57,21 @@ bool motor = false;
 
 void loop() {
   
-  distance1 = getDistance(epSensor1, tpSensor1);
-  distance2 = getDistance(epSensor2, tpSensor2);
-  distance3 = getDistance(epSensor3, tpSensor3);
-  
-  if (distance2 < 20.0){ //checks if roomba is in thing
+  rd = getDistance(roombaSensor.echo, roombaSensor.trig);
+  lwd = getDistance(leftWall.echo, leftWall.trig);
+  rwd = getDistance(rightWall.echo, rightWall.trig);
+  if (rd < 5.0){ //checks if roomba is in thing, that shou
+    delay(2000); //makes sure the roomba can get in without it starting to move
     if (!motor){
       motor = true;
       startMotor();
+      analogWrite(speedmotor, 200);
     } 
   }
-  if(distance1 < 20.0){ //checks if lift gonna hit wall
+
+  // IN PROGRESS
+  /*if(distance1 < 20.0){ //checks if lift gonna hit wall 
     motor = false;
     stopMotor();
-    } 
+    } */
 }
