@@ -54,19 +54,24 @@ void setup() {
 }
 
 bool motor = false;
+const float trackThreshold = 2.0 //filler number for threshold distance
 
 void loop() {
   
   rd = getDistance(roombaSensor.echo, roombaSensor.trig);
   lwd = getDistance(leftWall.echo, leftWall.trig);
   rwd = getDistance(rightWall.echo, rightWall.trig);
-  if (rd < 5.0){ //checks if roomba is in thing, that shou
+  if ((rd < 5.0)&&(lwd<trackThreshold)&&(rwd<trackThreshold)){ //added threshold check
     delay(2000); //makes sure the roomba can get in without it starting to move
     if (!motor){
       motor = true;
       startMotor();
       analogWrite(speedmotor, 200);
     } 
+  }
+  else{ //stop the motor since checks failed
+    motor = false;
+    stopMotor();
   }
 
   // IN PROGRESS
