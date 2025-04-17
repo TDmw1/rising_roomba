@@ -39,6 +39,8 @@ void stopMotor(){
 
 void setup() {
   //hc sensor
+  Serial.begin(9600);
+  
   pinMode(roombaSensor.trig, OUTPUT);
   pinMode(roombaSensor.echo, INPUT);
   pinMode(leftWall.trig, OUTPUT);
@@ -54,24 +56,46 @@ void setup() {
 }
 
 bool motor = false;
+const float trackThreshold = 20; //filler number for threshold distance
+const float roombaThreshold = 5; //filler number for threshold distance
 
 void loop() {
+
   
-  rd = getDistance(roombaSensor.echo, roombaSensor.trig);
-  lwd = getDistance(leftWall.echo, leftWall.trig);
-  rwd = getDistance(rightWall.echo, rightWall.trig);
-  if (rd < 5.0){ //checks if roomba is in thing, that shou
-    delay(2000); //makes sure the roomba can get in without it starting to move
-    if (!motor){
+
+
+  delay(2000);
+  
+  lwd = getDistance(roombaSensor.echo, roombaSensor.trig); //object in lifting platform checker
+  rwd = getDistance(leftWall.echo, leftWall.trig); //left track end detector
+  rd = getDistance(rightWall.echo, rightWall.trig); //right track end detector
+
+  //Serial.print("roomba: "); 
+  //Serial.println(rd);
+  
+  Serial.print("left: "); 
+  Serial.println(lwd);
+
+  Serial.print("right: "); 
+  Serial.println(rwd);
+  
+
+
+ 
+
+  
+  if (((true)||(true)) && (lwd<10)&&(rwd<10)){ //switch true for roomba calc after
+    delay(10); //give a 2 second delay
+    if (!motor){ //start the motor or keep it running
       motor = true;
       startMotor();
       analogWrite(speedmotor, 200);
     } 
   }
-
-  // IN PROGRESS
-  /*if(distance1 < 20.0){ //checks if lift gonna hit wall 
+  else{ //stop the motor since checks failed
     motor = false;
     stopMotor();
-    } */
+  }
+
+ 
 }
