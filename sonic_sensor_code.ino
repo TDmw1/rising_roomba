@@ -64,7 +64,7 @@ void loop() {
   
 
 
-  delay(2000);
+  delay(500);
   
   lwd = getDistance(roombaSensor.echo, roombaSensor.trig); //object in lifting platform checker
   rwd = getDistance(leftWall.echo, leftWall.trig); //left track end detector
@@ -82,14 +82,13 @@ void loop() {
 
 
  
-
   
   if (((true)||(true)) && (lwd<10)&&(rwd<10)){ //switch true for roomba calc after
     delay(10); //give a 2 second delay
     if (!motor){ //start the motor or keep it running
       motor = true;
       startMotor();
-      analogWrite(speedmotor, 200);
+      analogWrite(speedmotor, 125);
     } 
   }
   else{ //stop the motor since checks failed
