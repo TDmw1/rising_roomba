@@ -16,6 +16,10 @@ const int speedmotor = 3;
 
 float rd, lwd, rwd;
 
+bool leftEnd = false;
+bool rightEnd = false; //track direction booleans
+  
+
 float getDistance(int echo, int trig){
   digitalWrite(trig, LOW);
   delayMicroseconds(2);
@@ -32,12 +36,20 @@ void startMotor(){
   digitalWrite(motorpin2, LOW);
 }
 
+void altStartMotor() { //motor direction reverse
+  
+  digitalWrite(motorpin1, LOW);
+  digitalWrite(motorpin2, HIGH);
+  
+}
+
 void stopMotor(){
   digitalWrite(motorpin1, LOW);
   digitalWrite(motorpin2, LOW);
 }
 
 void setup() {
+
   //hc sensor
   Serial.begin(9600);
   
@@ -70,30 +82,61 @@ void loop() {
   rwd = getDistance(leftWall.echo, leftWall.trig); //left track end detector
   rd = getDistance(rightWall.echo, rightWall.trig); //right track end detector
 
-  //Serial.print("roomba: "); 
-  //Serial.println(rd);
+  Serial.print("roomba: "); 
+  Serial.println(rd);
   
-  Serial.print("left: "); 
-  Serial.println(lwd);
+  //Serial.print("left: "); 
+  //Serial.println(lwd);
 
-  Serial.print("right: "); 
-  Serial.println(rwd);
+ // Serial.print("right: "); 
+  //Serial.println(rwd);
+
+  bool switchAlt = false; 
+
+  if(leftEnd == false) {
+    switchAlt = false;
+  }
+  else {
+    switchAlt = true; //switch the motor direction based on previous readings
+  }
   
 
 
- 
+  if (lwd <10) { //left end of track is still detected
+    leftEnd = false;
+  }
+  else{
+    leftEnd = true;
+  }
+  
+  if (rwd <10) { //right end of track still detected
+    rightEnd = false;
+  }
+  else {
+    rightEnd = true;
+  }
   
   if (((true)||(true)) && (lwd<10)&&(rwd<10)){ //switch true for roomba calc after
-    delay(10); //give a 2 second delay
+    
+    delay(10); //slight delay
     if (!motor){ //start the motor or keep it running
       motor = true;
-      startMotor();
+
+      if(switchAlt) {
+        startMotor();
+      }
+      else{
+        altStartMotor();
+      }
+      
       analogWrite(speedmotor, 125);
     } 
   }
   else{ //stop the motor since checks failed
     motor = false;
     stopMotor();
+
+    
   }
 
  
